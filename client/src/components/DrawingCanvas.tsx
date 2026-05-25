@@ -87,6 +87,8 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ isExpert }) => {
   const addPoint = (e: any, isNew: boolean) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
+    // Używamy clientWidth/clientHeight, czyli faktycznego rozmiaru na ekranie
     const rect = canvas.getBoundingClientRect();
     
     let clientX, clientY;
@@ -103,11 +105,9 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ isExpert }) => {
 
     const point = { type: 'DRAW_POINT', x, y, isNew };
     
-    // Send to other participant
     const encoder = new TextEncoder();
     localParticipant.publishData(encoder.encode(JSON.stringify(point)), { reliable: true });
 
-    // Update local state
     setPoints(prev => [...prev, { x, y, isNew }]);
   };
 
@@ -128,8 +128,9 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ isExpert }) => {
         cursor: isExpert ? 'crosshair' : 'default',
         zIndex: 10,
       }}
-      width={1000}
-      height={1000}
+      // Ustawiamy rozdzielczość canvas na taką samą jak rozmiar CSS, żeby uniknąć skalowania
+      width={canvasRef.current?.clientWidth}
+      height={canvasRef.current?.clientHeight}
     />
   );
 };
