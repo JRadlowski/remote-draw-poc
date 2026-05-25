@@ -62,9 +62,8 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ isExpert }) => {
 
     ctx.beginPath();
     points.forEach((p) => {
-      // Both x and y are normalized relative to width for cross-device consistency
       const x = p.x * canvas.width;
-      const y = p.y * canvas.width;
+      const y = p.y * canvas.height;
       if (p.isNew) {
         ctx.moveTo(x, y);
       } else {
@@ -102,10 +101,8 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ isExpert }) => {
       clientY = e.clientY;
     }
 
-    // Both coordinates normalized relative to width for cross-device consistency.
-    // This ensures drawings appear at the same position regardless of screen aspect ratio.
     const x = (clientX - rect.left) / rect.width;
-    const y = (clientY - rect.top) / rect.width;
+    const y = (clientY - rect.top) / rect.height;
 
     const point = { type: 'DRAW_POINT', x, y, isNew };
     

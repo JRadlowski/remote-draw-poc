@@ -131,8 +131,6 @@ const SessionView = ({ role }: { role: 'expert' | 'client' }) => {
   const room = useRoomContext();
 
   const activeTrack = role === 'expert' ? remoteTrack : localTrack;
-  const dimensions = activeTrack?.publication?.dimensions;
-  const aspectRatio = dimensions ? dimensions.width / dimensions.height : undefined;
 
   useEffect(() => {
     const handleData = (payload: Uint8Array) => {
@@ -213,7 +211,7 @@ const SessionView = ({ role }: { role: 'expert' | 'client' }) => {
             <div style={{
               position: 'relative',
               height: '100%',
-              aspectRatio: aspectRatio ? `${aspectRatio}` : 'auto',
+              aspectRatio: '9 / 16',
               maxHeight: '100%',
               maxWidth: '100%',
               background: '#000',
