@@ -6,6 +6,8 @@ import {
   VideoTrack,
   useLocalParticipant,
   useRoomContext,
+  DisconnectButton,
+  ControlBar,
 } from '@livekit/components-react';
 import { Track } from 'livekit-client';
 import '@livekit/components-styles';
@@ -111,6 +113,8 @@ const SessionView = ({ role }: { role: 'expert' | 'client' }) => {
   const room = useRoomContext();
 
   const activeTrack = role === 'expert' ? remoteTrack : localTrack;
+  const dimensions = activeTrack?.publication?.dimensions;
+  const aspectRatio = dimensions ? dimensions.width / dimensions.height : undefined;
 
   useEffect(() => {
     const handleData = (payload: Uint8Array) => {
@@ -167,20 +171,33 @@ const SessionView = ({ role }: { role: 'expert' | 'client' }) => {
   };
 
   return (
-    <div style={{ position: 'relative', height: '100%', width: '100%', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 100, background: 'rgba(0,0,0,0.5)', padding: '5px 10px', borderRadius: '5px' }}>
+    <div style={{ position: 'relative', height: '100%', width: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 100, background: 'rgba(0,0,0,0.5)', padding: '5px 10px', borderRadius: '5px', pointerEvents: 'none' }}>
         Role: {role.toUpperCase()} {isFrozen && '(FROZEN)'}
       </div>
 
-      <div style={{ position: 'relative', height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 100 }}>
+        <DisconnectButton style={{ background: '#f44', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: '5px', cursor: 'pointer' }}>
+          Leave Session
+        </DisconnectButton>
+      </div>
+
+      <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
         {activeTrack ? (
-          <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+          <div style={{ 
+            position: 'relative', 
+            width: '100%', 
+            height: '100%',
+            maxWidth: aspectRatio ? `calc(100vh * ${aspectRatio})` : '100%',
+            maxHeight: aspectRatio ? `calc(100vw / ${aspectRatio})` : '100%',
+            aspectRatio: aspectRatio ? `${aspectRatio}` : 'auto'
+          }}>
             <VideoTrack 
               trackRef={activeTrack} 
               style={{ 
                 width: '100%', 
                 height: '100%', 
-                objectFit: 'contain',
+                objectFit: 'cover',
                 display: isFrozen ? 'none' : 'block'
               }} 
             />
@@ -189,7 +206,7 @@ const SessionView = ({ role }: { role: 'expert' | 'client' }) => {
               style={{ 
                 width: '100%', 
                 height: '100%', 
-                objectFit: 'contain',
+                objectFit: 'cover',
                 display: isFrozen ? 'block' : 'none'
               }} 
             />
@@ -200,17 +217,26 @@ const SessionView = ({ role }: { role: 'expert' | 'client' }) => {
         )}
       </div>
 
-      {role === 'expert' && (
-        <div style={{ position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 100, display: 'flex', gap: '10px' }}>
-          <button style={{ padding: '10px 20px', cursor: 'pointer' }} onClick={handleClear}>Clear Canvas</button>
-          <button 
-            style={{ padding: '10px 20px', cursor: 'pointer', background: isFrozen ? '#f00' : '#fff' }} 
-            onClick={handleFreezeToggle}
-          >
-            {isFrozen ? 'Unfreeze' : 'Freeze Frame'}
-          </button>
-        </div>
-      )}
+      <div style={{ padding: '10px', display: 'flex', justifyContent: 'center', gap: '20px', background: 'rgba(0,0,0,0.8)', zIndex: 110 }}>
+        <ControlBar variation="minimal" controls={{ leave: false }} />
+        {role === 'expert' && (
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button style={{ padding: '10px 20px', cursor: 'pointer', borderRadius: '5px' }} onClick={handleClear}>Clear Canvas</button>
+            <button 
+              style={{ 
+                padding: '10px 20px', 
+                cursor: 'pointer', 
+                borderRadius: '5px',
+                background: isFrozen ? '#f00' : '#fff',
+                color: isFrozen ? '#fff' : '#000'
+              }} 
+              onClick={handleFreezeToggle}
+            >
+              {isFrozen ? 'Unfreeze' : 'Freeze Frame'}
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
