@@ -1,0 +1,7 @@
+version: "2"
+authtoken: 3EDlDyzn0AuhrQ5ry9j9BuUqE12_3fDEbhaahTfdMc7qJwbRT
+tunnels:
+  server:
+    proto: http
+    addr: 3001
+    domain: quit-flying-audition.ngrok-free.dev
