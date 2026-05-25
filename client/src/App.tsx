@@ -13,6 +13,7 @@ import { Track } from 'livekit-client';
 import '@livekit/components-styles';
 import './App.css';
 import DrawingCanvas from './components/DrawingCanvas';
+import SpatialCanvas from './components/SpatialCanvas';
 
 const App = () => {
   const [sessionData, setSessionData] = useState<{
@@ -51,7 +52,7 @@ const App = () => {
   if (role && token) {
     return (
       <LiveKitRoom
-        video={role === 'client'}
+        video={false}
         audio={true}
         token={token}
         serverUrl={new URLSearchParams(window.location.search).get('url') || ''}
@@ -201,7 +202,9 @@ const SessionView = ({ role }: { role: 'expert' | 'client' }) => {
       </div>
 
       <div className="video-stage">
-        {activeTrack ? (
+        {role === 'client' ? (
+          <SpatialCanvas isExpert={false} isFrozen={isFrozen} />
+        ) : activeTrack ? (
           <div className="canvas-wrapper" style={{ 
             height: '100%',
             width: '100%',
