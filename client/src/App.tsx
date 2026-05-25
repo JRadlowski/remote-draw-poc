@@ -197,7 +197,7 @@ const SessionView = ({ role }: { role: 'expert' | 'client' }) => {
               style={{ 
                 width: '100%', 
                 height: '100%', 
-                objectFit: 'cover',
+                objectFit: 'contain',
                 display: isFrozen ? 'none' : 'block'
               }} 
             />
@@ -206,7 +206,7 @@ const SessionView = ({ role }: { role: 'expert' | 'client' }) => {
               style={{ 
                 width: '100%', 
                 height: '100%', 
-                objectFit: 'cover',
+                objectFit: 'contain',
                 display: isFrozen ? 'block' : 'none'
               }} 
             />
