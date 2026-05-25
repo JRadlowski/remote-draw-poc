@@ -83,57 +83,52 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ isExpert }) => {
     if (e.type === 'mousemove' && (e as React.MouseEvent).buttons !== 1) return;
     addPoint(e, false);
   };
+const addPoint = (e: any, isNew: boolean) => {
+  const canvas = canvasRef.current;
+  if (!canvas) return;
 
-    // Zamiast używać bieżącego rect (który zmienia się wraz z czarnymi pasami),
-    // używamy proporcji 9:16, która jest natywna dla wideo z telefonu.
-    // Dzięki temu, niezależnie od tego czy ekran jest szeroki czy wąski,
-    // (0,0) - (1,1) zawsze odnosi się do tego samego obszaru wideo.
-    const aspectRatio = 9 / 16;
-    const rect = canvas.getBoundingClientRect();
-    
-    let clientX, clientY;
-    if (e.touches) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
+  // Zamiast używać bieżącego rect (który zmienia się wraz z czarnymi pasami),
+  // używamy proporcji 9:16, która jest natywna dla wideo z telefonu.
+  const aspectRatio = 9 / 16;
+  const rect = canvas.getBoundingClientRect();
 
-    // Obliczamy skalę wideo wewnątrz kontenera
-    let vWidth = rect.width;
-    let vHeight = rect.height;
-    
-    // Jeśli kontener jest szerszy niż proporcja wideo, to wideo ma czarne pasy po bokach
-    if (rect.width / rect.height > aspectRatio) {
-      vWidth = rect.height * aspectRatio;
-    } else {
-      vHeight = rect.width / aspectRatio;
-    }
+  let clientX, clientY;
+  if (e.touches) {
+    clientX = e.touches[0].clientX;
+    clientY = e.touches[0].clientY;
+  } else {
+    clientX = e.clientX;
+    clientY = e.clientY;
+  }
 
-    // Offset wideo względem canvasa
-    const offsetX = (rect.width - vWidth) / 2;
-    const offsetY = (rect.height - vHeight) / 2;
+  // Obliczamy skalę wideo wewnątrz kontenera
+  let vWidth = rect.width;
+  let vHeight = rect.height;
 
-    const x = (clientX - rect.left - offsetX) / vWidth;
-    const y = (clientY - rect.top - offsetY) / vHeight;
+  // Jeśli kontener jest szerszy niż proporcja wideo, to wideo ma czarne pasy po bokach
+  if (rect.width / rect.height > aspectRatio) {
+    vWidth = rect.height * aspectRatio;
+  } else {
+    vHeight = rect.width / aspectRatio;
+  }
 
-    // Ignoruj kliknięcia poza wideo
-    if (x < 0 || x > 1 || y < 0 || y > 1) return;
+  // Offset wideo względem canvasa
+  const offsetX = (rect.width - vWidth) / 2;
+  const offsetY = (rect.height - vHeight) / 2;
 
-    const point = { type: 'DRAW_POINT', x, y, isNew };
-    
-    const encoder = new TextEncoder();
-    localParticipant.publishData(encoder.encode(JSON.stringify(point)), { reliable: true });
+  const x = (clientX - rect.left - offsetX) / vWidth;
+  const y = (clientY - rect.top - offsetY) / vHeight;
 
-    setPoints(prev => [...prev, { x, y, isNew }]);
-  };
+  // Ignoruj kliknięcia poza wideo
+  if (x < 0 || x > 1 || y < 0 || y > 1) return;
 
-  return (
-    <canvas
-      ref={canvasRef}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
+  const point = { type: 'DRAW_POINT', x, y, isNew };
+
+  const encoder = new TextEncoder();
+  localParticipant.publishData(encoder.encode(JSON.stringify(point)), { reliable: true });
+
+  setPoints(prev => [...prev, { x, y, isNew }]);
+};
       onTouchStart={handleMouseDown}
       onTouchMove={handleMouseMove}
       style={{
