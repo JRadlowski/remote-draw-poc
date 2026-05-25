@@ -94,7 +94,6 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ isExpert }) => {
 
     // Pobierz faktyczne wyświetlane wymiary wideo (z uwzględnieniem object-fit: contain)
     const videoRect = video.getBoundingClientRect();
-    const canvasRect = canvas.getBoundingClientRect();
 
     let clientX, clientY;
     if (e.touches) {
