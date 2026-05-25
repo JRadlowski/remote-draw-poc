@@ -35,7 +35,7 @@ const App = () => {
 
   const createSession = async () => {
     try {
-      const response = await fetch('https://quit-flying-audition.ngrok-free.dev/api/session', {
+      const response = await fetch('https://remote-draw-server-maun.onrender.com/api/session', {
         method: 'POST',
       });
       const data = await response.json();
