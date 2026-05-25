@@ -84,11 +84,12 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ isExpert }) => {
     addPoint(e, false);
   };
 
-    // Zamiast używać bieżącego rect (który zmienia się wraz z czarnymi pasami),
-    // używamy proporcji 9:16, która jest natywna dla wideo z telefonu.
-    // Dzięki temu, niezależnie od tego czy ekran jest szeroki czy wąski,
-    // (0,0) - (1,1) zawsze odnosi się do tego samego obszaru wideo.
-    const aspectRatio = 9 / 16;
+  const addPoint = (e: any, isNew: boolean) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Pobieramy rect canvasa, który dzięki CSS 'object-fit: contain' 
+    // jest dokładnie tej samej wielkości co wideo.
     const rect = canvas.getBoundingClientRect();
     
     let clientX, clientY;
@@ -100,26 +101,10 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ isExpert }) => {
       clientY = e.clientY;
     }
 
-    // Obliczamy skalę wideo wewnątrz kontenera
-    let vWidth = rect.width;
-    let vHeight = rect.height;
-    
-    // Jeśli kontener jest szerszy niż proporcja wideo, to wideo ma czarne pasy po bokach
-    if (rect.width / rect.height > aspectRatio) {
-      vWidth = rect.height * aspectRatio;
-    } else {
-      vHeight = rect.width / aspectRatio;
-    }
-
-    // Offset wideo względem canvasa
-    const offsetX = (rect.width - vWidth) / 2;
-    const offsetY = (rect.height - vHeight) / 2;
-
-    const x = (clientX - rect.left - offsetX) / vWidth;
-    const y = (clientY - rect.top - offsetY) / vHeight;
-
-    // Ignoruj kliknięcia poza wideo
-    if (x < 0 || x > 1 || y < 0 || y > 1) return;
+    // Mapujemy wprost na canvas. Ponieważ canvas wypełnia to samo miejsce co wideo,
+    // to zadziała niezależnie od czarnych pasów.
+    const x = (clientX - rect.left) / rect.width;
+    const y = (clientY - rect.top) / rect.height;
 
     const point = { type: 'DRAW_POINT', x, y, isNew };
     
