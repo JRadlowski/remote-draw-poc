@@ -11,6 +11,7 @@ import {
 } from '@livekit/components-react';
 import { Track } from 'livekit-client';
 import '@livekit/components-styles';
+import './App.css';
 import DrawingCanvas from './components/DrawingCanvas';
 
 const App = () => {
@@ -49,55 +50,72 @@ const App = () => {
 
   if (role && token) {
     return (
-      <div style={{ height: '100vh', width: '100vw', background: '#000', color: '#fff' }}>
-        <LiveKitRoom
-          video={role === 'client'}
-          audio={true}
-          token={token}
-          serverUrl={new URLSearchParams(window.location.search).get('url') || ''}
-          connect={true}
-        >
-          <SessionView role={role} />
-          <RoomAudioRenderer />
-        </LiveKitRoom>
-      </div>
+      <LiveKitRoom
+        video={role === 'client'}
+        audio={true}
+        token={token}
+        serverUrl={new URLSearchParams(window.location.search).get('url') || ''}
+        connect={true}
+      >
+        <SessionView role={role} />
+        <RoomAudioRenderer />
+      </LiveKitRoom>
     );
   }
 
   return (
-    <div style={{ padding: '20px', textAlign: 'center', fontFamily: 'sans-serif' }}>
-      <h1>Remote Draw Support PoC</h1>
-      {!sessionData ? (
-        <button onClick={createSession} style={{ padding: '15px 30px', fontSize: '1.2rem', cursor: 'pointer' }}>
-          Generate Support Session
-        </button>
-      ) : (
-        <div style={{ marginTop: '20px', textAlign: 'left', maxWidth: '600px', margin: '20px auto' }}>
-          <h3>Session Created!</h3>
-          <div style={{ marginBottom: '20px', border: '1px solid #ccc', padding: '15px' }}>
-            <p><strong>Expert Link:</strong></p>
-            <input 
-              readOnly 
-              value={`${window.location.origin}?role=expert&token=${sessionData.expertToken}&url=${sessionData.url}`}
-              style={{ width: '100%', marginBottom: '10px' }}
-            />
-            <button onClick={() => window.open(`${window.location.origin}?role=expert&token=${sessionData.expertToken}&url=${sessionData.url}`)}>
-              Open Expert View
+    <div className="home-container">
+      <div className="bg-glow"></div>
+      <div className="home-card">
+        <h1>Remote Draw</h1>
+        {!sessionData ? (
+          <>
+            <p className="hero-subtitle">
+              Instant visual support with real-time AR drawing. <br/>
+              No apps. No downloads. Just support.
+            </p>
+            <button className="btn btn-primary" onClick={createSession}>
+              Generate Session
+            </button>
+          </>
+        ) : (
+          <div className="session-links">
+            <h3 style={{ margin: 0, fontSize: '1.5rem' }}>Session Ready</h3>
+            
+            <div className="link-box">
+              <span className="link-label">Expert Dashboard</span>
+              <div className="input-row">
+                <input 
+                  readOnly 
+                  className="input-field"
+                  value={`${window.location.origin}?role=expert&token=${sessionData.expertToken}&url=${sessionData.url}`}
+                />
+                <button className="btn btn-secondary" style={{ height: 'auto', padding: '0 1rem' }} onClick={() => window.open(`${window.location.origin}?role=expert&token=${sessionData.expertToken}&url=${sessionData.url}`)}>
+                  Open
+                </button>
+              </div>
+            </div>
+
+            <div className="link-box">
+              <span className="link-label">Client Mobile View</span>
+              <div className="input-row">
+                <input 
+                  readOnly 
+                  className="input-field"
+                  value={`${window.location.origin}?role=client&token=${sessionData.clientToken}&url=${sessionData.url}`}
+                />
+                <button className="btn btn-secondary" style={{ height: 'auto', padding: '0 1rem' }} onClick={() => navigator.clipboard.writeText(`${window.location.origin}?role=client&token=${sessionData.clientToken}&url=${sessionData.url}`)}>
+                  Copy
+                </button>
+              </div>
+            </div>
+            
+            <button className="btn btn-primary" style={{ marginTop: '1rem' }} onClick={() => setSessionData(null)}>
+              Start Over
             </button>
           </div>
-          <div style={{ border: '1px solid #ccc', padding: '15px' }}>
-            <p><strong>Client Link (Mobile):</strong></p>
-            <input 
-              readOnly 
-              value={`${window.location.origin}?role=client&token=${sessionData.clientToken}&url=${sessionData.url}`}
-              style={{ width: '100%', marginBottom: '10px' }}
-            />
-            <button onClick={() => navigator.clipboard.writeText(`${window.location.origin}?role=client&token=${sessionData.clientToken}&url=${sessionData.url}`)}>
-              Copy Client Link
-            </button>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
@@ -171,23 +189,20 @@ const SessionView = ({ role }: { role: 'expert' | 'client' }) => {
   };
 
   return (
-    <div style={{ position: 'relative', height: '100%', width: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 100, background: 'rgba(0,0,0,0.5)', padding: '5px 10px', borderRadius: '5px', pointerEvents: 'none' }}>
-        Role: {role.toUpperCase()} {isFrozen && '(FROZEN)'}
-      </div>
-
-      <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 100 }}>
-        <DisconnectButton style={{ background: '#f44', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: '5px', cursor: 'pointer' }}>
-          Leave Session
+    <div className="session-view">
+      <div className="glass-header">
+        <div className="status-indicator">
+          <div className={`dot ${isFrozen ? 'frozen' : ''}`}></div>
+          {role.toUpperCase()} {isFrozen && '• FROZEN'}
+        </div>
+        <DisconnectButton className="btn btn-danger" style={{ height: '2.5rem', padding: '0 1rem' }}>
+          End Session
         </DisconnectButton>
       </div>
 
-      <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+      <div className="video-stage">
         {activeTrack ? (
-          <div style={{ 
-            position: 'relative', 
-            width: '100%', 
-            height: '100%',
+          <div className="canvas-wrapper" style={{ 
             maxWidth: aspectRatio ? `calc(100vh * ${aspectRatio})` : '100%',
             maxHeight: aspectRatio ? `calc(100vw / ${aspectRatio})` : '100%',
             aspectRatio: aspectRatio ? `${aspectRatio}` : 'auto'
@@ -213,26 +228,26 @@ const SessionView = ({ role }: { role: 'expert' | 'client' }) => {
             <DrawingCanvas isExpert={role === 'expert'} />
           </div>
         ) : (
-          <p>Waiting for camera stream...</p>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+            <div className="spinner"></div>
+            <p style={{ color: 'var(--text-secondary)' }}>Establishing connection...</p>
+          </div>
         )}
       </div>
 
-      <div style={{ padding: '10px', display: 'flex', justifyContent: 'center', gap: '20px', background: 'rgba(0,0,0,0.8)', zIndex: 110 }}>
+      <div className="bottom-bar">
         <ControlBar variation="minimal" controls={{ leave: false }} />
         {role === 'expert' && (
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button style={{ padding: '10px 20px', cursor: 'pointer', borderRadius: '5px' }} onClick={handleClear}>Clear Canvas</button>
+          <div className="tool-group">
+            <button className="btn btn-secondary" style={{ height: '3rem' }} onClick={handleClear}>
+              Clear
+            </button>
             <button 
-              style={{ 
-                padding: '10px 20px', 
-                cursor: 'pointer', 
-                borderRadius: '5px',
-                background: isFrozen ? '#f00' : '#fff',
-                color: isFrozen ? '#fff' : '#000'
-              }} 
+              className={`btn ${isFrozen ? 'btn-danger' : 'btn-primary'} freeze-btn`}
+              style={{ height: '3rem' }}
               onClick={handleFreezeToggle}
             >
-              {isFrozen ? 'Unfreeze' : 'Freeze Frame'}
+              {isFrozen ? 'Unfreeze' : 'Freeze'}
             </button>
           </div>
         )}
