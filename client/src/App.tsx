@@ -50,36 +50,16 @@ const App = () => {
 
   if (role && token) {
     return (
-        <LiveKitRoom
-            // Definiujemy pełne Full HD dla kamery Klienta
-            video={role === 'client' ? {
-              facingMode: 'environment', // Wymuszenie tylnej kamery
-              resolution: {
-                width: 1920,   // Full HD szerokość
-                height: 1080,  // Full HD wysokość
-                frameRate: 30  // Wymuszenie 30 klatek na sekundę
-              }
-            } : false}
-            audio={true}
-            token={token}
-            serverUrl={new URLSearchParams(window.location.search).get('url') || ''}
-            connect={true}
-
-            // Parametry kodowania dla strumienia Full HD
-            options={{
-              publishDefaults: {
-                simulcast: false,       // Wyłączone, żeby telefon skupił całą moc na jednym strumieniu max jakości
-                videoCodec: 'vp8',
-                videoEncoding: {
-                  maxBitrate: 4500000,  // 4.5 Mbps – idealne pasmo dla ostrego 1080p30 w WebRTC
-                  maxFramerate: 30,     // Górny limit klatek zrównany z kamerą
-                }
-              }
-            }}
-        >
-          <SessionView role={role} />
-          <RoomAudioRenderer />
-        </LiveKitRoom>
+      <LiveKitRoom
+        video={role === 'client'}
+        audio={true}
+        token={token}
+        serverUrl={new URLSearchParams(window.location.search).get('url') || ''}
+        connect={true}
+      >
+        <SessionView role={role} />
+        <RoomAudioRenderer />
+      </LiveKitRoom>
     );
   }
 
