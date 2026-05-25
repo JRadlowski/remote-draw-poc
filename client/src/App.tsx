@@ -9,7 +9,8 @@ import {
   DisconnectButton,
   ControlBar,
 } from '@livekit/components-react';
-import { Track, VideoPresets, RoomOptions } from 'livekit-client';
+import { Track, VideoPresets } from 'livekit-client';
+import type { RoomOptions } from 'livekit-client';
 import '@livekit/components-styles';
 import './App.css';
 import DrawingCanvas from './components/DrawingCanvas';
