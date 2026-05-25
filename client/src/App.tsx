@@ -9,7 +9,7 @@ import {
   DisconnectButton,
   ControlBar,
 } from '@livekit/components-react';
-import { Track } from 'livekit-client';
+import { Track, VideoPresets, RoomOptions } from 'livekit-client';
 import '@livekit/components-styles';
 import './App.css';
 import DrawingCanvas from './components/DrawingCanvas';
@@ -56,6 +56,19 @@ const App = () => {
         token={token}
         serverUrl={new URLSearchParams(window.location.search).get('url') || ''}
         connect={true}
+        options={{
+          videoCaptureDefaults: {
+            resolution: VideoPresets.h1080.resolution,
+            facingMode: 'environment',
+          },
+          publishDefaults: {
+            videoEncoding: {
+              maxBitrate: 2_500_000,
+              maxFramerate: 30,
+            },
+            videoCodec: 'h264',
+          },
+        } as RoomOptions}
       >
         <SessionView role={role} />
         <RoomAudioRenderer />
