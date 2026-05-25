@@ -203,29 +203,43 @@ const SessionView = ({ role }: { role: 'expert' | 'client' }) => {
       <div className="video-stage">
         {activeTrack ? (
           <div className="canvas-wrapper" style={{ 
-            maxWidth: aspectRatio ? `calc(100vh * ${aspectRatio})` : '100%',
-            maxHeight: aspectRatio ? `calc(100vw / ${aspectRatio})` : '100%',
-            aspectRatio: aspectRatio ? `${aspectRatio}` : 'auto'
+            height: '100%',
+            width: '100%',
+            maxHeight: 'calc(100vh - 180px)', // Odejmujemy miejsce na nagłówek i stopkę
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}>
-            <VideoTrack 
-              trackRef={activeTrack} 
-              style={{ 
-                width: '100%', 
-                height: '100%', 
-                objectFit: 'contain',
-                display: isFrozen ? 'none' : 'block'
-              }} 
-            />
-            <canvas 
-              ref={snapshotCanvasRef} 
-              style={{ 
-                width: '100%', 
-                height: '100%', 
-                objectFit: 'contain',
-                display: isFrozen ? 'block' : 'none'
-              }} 
-            />
-            <DrawingCanvas isExpert={role === 'expert'} />
+            <div style={{
+              position: 'relative',
+              height: '100%',
+              aspectRatio: aspectRatio ? `${aspectRatio}` : 'auto',
+              maxHeight: '100%',
+              maxWidth: '100%',
+              background: '#000',
+              borderRadius: '0.5rem',
+              overflow: 'hidden'
+            }}>
+              <VideoTrack 
+                trackRef={activeTrack} 
+                style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  objectFit: 'contain',
+                  display: isFrozen ? 'none' : 'block'
+                }} 
+              />
+              <canvas 
+                ref={snapshotCanvasRef} 
+                style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  objectFit: 'contain',
+                  display: isFrozen ? 'block' : 'none'
+                }} 
+              />
+              <DrawingCanvas isExpert={role === 'expert'} />
+            </div>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
