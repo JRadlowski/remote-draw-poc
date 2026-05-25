@@ -88,13 +88,10 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ isExpert }) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Znajdź element wideo w DOM (LiveKit renderuje go jako potomek elementu z trackiem)
-    const video = document.querySelector('video');
-    if (!video) return;
-
-    // Pobierz faktyczne wyświetlane wymiary wideo (z uwzględnieniem object-fit: contain)
-    const videoRect = video.getBoundingClientRect();
-
+    // Pobieramy rect canvasa, który dzięki CSS 'object-fit: contain' 
+    // jest dokładnie tej samej wielkości co wideo.
+    const rect = canvas.getBoundingClientRect();
+    
     let clientX, clientY;
     if (e.touches) {
       clientX = e.touches[0].clientX;
@@ -104,13 +101,10 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ isExpert }) => {
       clientY = e.clientY;
     }
 
-    // Oblicz współrzędne relatywne do wideo, a nie do całego canvasa
-    // Jeśli kliknięcie jest poza wideo, ignorujemy je
-    if (clientX < videoRect.left || clientX > videoRect.right || 
-        clientY < videoRect.top || clientY > videoRect.bottom) return;
-
-    const x = (clientX - videoRect.left) / videoRect.width;
-    const y = (clientY - videoRect.top) / videoRect.height;
+    // Mapujemy wprost na canvas. Ponieważ canvas wypełnia to samo miejsce co wideo,
+    // to zadziała niezależnie od czarnych pasów.
+    const x = (clientX - rect.left) / rect.width;
+    const y = (clientY - rect.top) / rect.height;
 
     const point = { type: 'DRAW_POINT', x, y, isNew };
     
